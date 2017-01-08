@@ -15,11 +15,17 @@ import com.mongodb.BasicDBList;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.DBCursor;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.FindIterable;
 import org.bson.Document;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
 
 import java.util.ArrayList;
 import jess.Fact;
 import jess.Rete;
+import rbsa.eoss.local.Params;
 
 
 /**
@@ -29,19 +35,15 @@ import jess.Rete;
 public class DBManagement {
     
     private MongoClient mongoClient;
-    private String dbName = "arch_data";
+    private String dbName = "EOSS_eval_data";
     private String metaDataCollectionName = "metadata";
     private ArrayList<String> dataCollectionNames;
     private static DBManagement instance = null;
-    
-    private MongoDatabase Mdb;
-
 
     
     public DBManagement(){
         try{            
             mongoClient = new MongoClient( "localhost" , 27017 );
-            Mdb = mongoClient.getDatabase(this.dbName);
             dataCollectionNames = new ArrayList<>();
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -52,19 +54,28 @@ public class DBManagement {
         try{            
             this.dbName = dbName;
             mongoClient = new MongoClient( "localhost" , 27017 );
-            Mdb = mongoClient.getDatabase(this.dbName);
             dataCollectionNames = new ArrayList<>();
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
     }
 
+    public static DBManagement getInstance()
+    {
+        if( instance == null ) 
+        {
+            instance = new DBManagement();
+        }
+        return instance;
+    }
 
 
+    
+    
+    
 
-
-    public void setCollectionNames(ArrayList<String> colNames){
-        this.dataCollectionNames = colNames;
+    public void addNewCollection(String colName){
+        this.dataCollectionNames.add(colName);
     }
     
     public void createNewDB(){
@@ -78,55 +89,79 @@ public class DBManagement {
         if(dbExists) {
             mongoClient.getDatabase(dbName).drop();
         }
-        Mdb = mongoClient.getDatabase(dbName);
+//        mongoClient.getDatabase(dbName).drop();
     }
-    public void createNewCollections(){
-        DB db = mongoClient.getDB(dbName);
+    
+//    public void createNewCollections(){
+//        DB db = mongoClient.getDB(dbName);
+//        if(db.collectionExists(metaDataCollectionName)){
+//            db.getCollection(metaDataCollectionName).drop();
+//        }
+//        for(String col:this.dataCollectionNames){
+//            if(db.collectionExists(col)){
+//                db.getCollection(col).drop();
+//            }        
+//        }
+//    }
+    
+    
 
-        if(db.collectionExists(metaDataCollectionName)){
-            db.getCollection(metaDataCollectionName).drop();
-        }
-        for(String col:this.dataCollectionNames){
-            if(db.collectionExists(col)){
-                db.getCollection(col).drop();
-            }        
-        }
-    }
-    
-    
-    
-    
-    
-    
-    public void encodeMetadata(int id, String bitString){
+    public void encodeMetadata(int ArchID, String bitString, double science, double cost){
         MongoDatabase Mdb = mongoClient.getDatabase(dbName);
         MongoCollection col = Mdb.getCollection(metaDataCollectionName);
         col.insertOne(
                 new Document()
-                    .append("id", id)
+                    .append("ArchID", ArchID)
                     .append("bitString",bitString)
+                    .append("science", science)
+                    .append("cost",cost)
         );
     }
     
-    public void encodeData(String collectionName, Rete r, QueryBuilder qb){
+    public void encodeData(int ArchID, String collectionPrefix, Rete r, QueryBuilder qb){
         MongoDatabase Mdb = mongoClient.getDatabase(dbName);
-        MongoCollection col = Mdb.getCollection(collectionName);
 
         ArrayList<Integer> factsToEncode = new ArrayList<>();
         ArrayList<Integer> factsEncoded = new ArrayList<>();
             
         try{
-            jess.Fact value = qb.makeQuery("AGGREGATION::VALUE").get(0);
-            JessFactHandler jfh = new JessFactHandler(value, r, qb);
-            factsToEncode = jfh.getParentFactIDs();
-
+            
+            JessFactHandler jfh = null;
+            if(collectionPrefix.equalsIgnoreCase("science")){
+                jess.Fact value = qb.makeQuery("AGGREGATION::VALUE").get(0);
+                jfh = new JessFactHandler(value, r, qb);
+                factsToEncode = jfh.getParentFactIDs();
+            }else if(collectionPrefix.equalsIgnoreCase("cost")){
+                ArrayList<Fact> missions = qb.makeQuery("MANIFEST::Mission");
+                for(Fact m:missions){
+                    factsToEncode.add(m.getFactId());
+                }
+                jfh = new JessFactHandler(missions.get(0), r, qb);
+            }
+            
             int cnt =0;
             while(factsToEncode.size() > 0){
                 // Get the first element from the array and remove it from the list
                 jess.Fact thisFact = r.findFactByID(factsToEncode.get(0));
+                
+                // Requested Fact had been retracted
+                if(thisFact==null){
+                    System.out.println("Requested Fact had been retracted");
+                    factsEncoded.add(factsToEncode.get(0));
+                    factsToEncode.remove(0);
+                    cnt++;
+                    continue;
+                }
+                
                 // Encode the fact
-                org.bson.Document doc = encodeFact(thisFact,r,qb);
+                org.bson.Document doc = encodeFact(ArchID, thisFact,r,qb);
+                
+                String collectionName = collectionPrefix + "." + thisFact.getName().replace("::",".");
+                collectionName = collectionName.replace("-", "_");
+                
+                MongoCollection col = Mdb.getCollection(collectionName);
                 col.insertOne(doc);
+                
                 // Remove the encoded fact from the list
                 factsToEncode.remove(0);
                 factsEncoded.add(thisFact.getFactId());
@@ -150,14 +185,16 @@ public class DBManagement {
     }
     
     
-    public org.bson.Document encodeFact(jess.Fact f, Rete r, QueryBuilder qb){
+    public org.bson.Document encodeFact(int ArchID, jess.Fact f, Rete r, QueryBuilder qb){
         
         org.bson.Document doc = new org.bson.Document();
-        doc.append("factName", f.getName());
-        doc.append("factID",f.getFactId());
-        doc.append("module", f.getModule());
         
         try{
+            doc.append("ArchID",ArchID);
+            doc.append("factName", f.getName());
+            doc.append("factID",f.getFactId());
+            doc.append("module", f.getModule());            
+        
             jess.Deftemplate factTemplate = f.getDeftemplate();
             String[] slots = factTemplate.getSlotNames();
             
@@ -207,62 +244,93 @@ public class DBManagement {
         return doc;
     }
     
-    
-    
+    public void makeQuery(){
+        
+        MongoDatabase Mdb = mongoClient.getDatabase(dbName);
+        MongoCollection col = Mdb.getCollection("science.MANIFEST.Mission");
+        FindIterable found = col.find(
+                and(
+                    eq("factName","MANIFEST::Mission"),
+                    gte("fraction-sunlight",0.7)
+                ));
+        
+//        Example:
+//        col.find(and(gte("stars", 2), lt("stars", 5), eq("categories", "Bakery")));
 
-
-//    public ArrayList<String>[] queryAllCandidateFeatures(){
-//        
-//        ArrayList<String>[] candidateFeatures = new ArrayList[2];
-//        ArrayList<String> cfn = new ArrayList<>(); // candidate feature names
-//        ArrayList<String> cfe = new ArrayList<>(); // candidate feature expressions
-//        
-//        DB db = mongoClient.getDB(dbName);
-//        DBCollection col = db.getCollection("asdfasdf");
-//        DBCursor cursor = col.find();
-//        
-//        while(cursor.hasNext()){
-//            DBObject doc = cursor.next();
-//            cfn.add((String) doc.get("name"));
-//            cfe.add((String) doc.get("expression"));
-//        }
-//        candidateFeatures[0] = cfn;
-//        candidateFeatures[1] = cfe;
-//        return candidateFeatures;
-//    }
-    public void queryAllArchitecture(){
-//        DB db = mongoClient.getDB(dbName);
-//        DBCollection col = db.getCollection(dataCollectionName);
-//        DBCursor cursor = col.find();
-//        ArrayList<Architecture> allArch = new ArrayList<>();
-//        while(cursor.hasNext()){
-//            DBObject doc = cursor.next();
-//            int id = (int) doc.get("id");
-//            ArrayList<String> inputs = (ArrayList<String>) doc.get("inputs");
-//            ArrayList<String> outputs = (ArrayList<String>) doc.get("outputs");
-//        }
+        found.projection(fields(
+                    include("factName","factID","module","fraction-sunlight"),
+                    exclude("_id")
+                ));
+        
+        MongoCursor iter = found.iterator();
+        while(iter.hasNext()){
+            Document doc = (Document) iter.next();
+            System.out.println(doc.get("fraction-sunlight").getClass().toString());
+            System.out.println(doc.toString());
+        }
+    }    
+    
+    /**
+     * Makes a query from the database
+     * 
+     * @param collectionPrefix: Prefix for the collection name: science or cost
+     * @param factName: Name of the fact to be searched
+     * @param slots: Names of the slots to be used in the filter
+     * @param conditions: Equality and inequality signs. Valid input are: gt, lt, gte, lte, eq
+     * @param values: Values to be compared.
+     * @param valueTypes: Types of values. Valid inputs are: Integer, Double, String
+     */
+    public void makeQuery(String collectionPrefix, String factName, ArrayList<String> slots, ArrayList<String> conditions, 
+            ArrayList<String> values, ArrayList<String> valueTypes){
+        
+        MongoDatabase Mdb = mongoClient.getDatabase(dbName);
+        
+        String collectionName = collectionPrefix + "." + factName.replace("::",".").replace("-", "_");
+        MongoCollection col = Mdb.getCollection(collectionName);
+        
+        Document filter = new Document("factName",factName);
+        
+        for(int i=0;i<slots.size();i++){
+            String slotName = slots.get(i);
+            String cond = conditions.get(i);
+            String val = values.get(i);
+            String valType = valueTypes.get(i);
+            if(cond.equals("eq")){
+                if(valType.equals("String")){
+                    filter.append(slotName,val);
+                }
+                else if(valType.equals("Integer")){
+                    filter.append(slotName, Integer.parseInt(val));
+                }
+                else if(valType.equals("Double")){
+                    filter.append(slotName, Double.parseDouble(val));
+                }
+            }
+            else if(cond.equals("gt") || cond.equals("gte") || cond.equals("lt") || cond.equals("lte")){
+                if(valType.equals("String")){
+                    filter.append(slotName, new Document("$"+cond,val));
+                }
+                else if(valType.equals("Integer")){
+                    filter.append(slotName, new Document("$"+cond,Integer.parseInt(val)));
+                }
+                else if(valType.equals("Double")){
+                    filter.append(slotName, new Document("$"+cond,Double.parseDouble(val)));
+                }
+            }            
+        }
+        
+        FindIterable found = col.find(filter);
+        found.projection(fields(
+                    exclude("_id","factID","factHistory")
+                ));
+        MongoCursor iter = found.iterator();
+        while(iter.hasNext()){
+            Document doc = (Document) iter.next();
+            System.out.println(doc.toString());
+        }
     }
     
-    public void queryArchitecture(int id){
-//        DB db = mongoClient.getDB(dbName);
-//        DBCollection col = db.getCollection(dataCollectionName);
-//        BasicDBObject whereQuery = new BasicDBObject();
-//        whereQuery.put("id", id);
-//        DBCursor cursor = col.find(whereQuery);
-//        DBObject doc = cursor.one();
-//        ArrayList<String> inputs = (ArrayList<String>) doc.get("inputs");
-//        ArrayList<String> outputs = (ArrayList<String>) doc.get("outputs");
-    }
-    
-//    public ArrayList<String> queryInputNames(){
-//        DB db = mongoClient.getDB(dbName);
-//        DBCollection col = db.getCollection(metaDataCollectionName);
-//        DBCursor cursor = col.find();
-//        DBObject doc = cursor.one();
-//        ArrayList<String> inputNames = (ArrayList<String>) doc.get("inputNames");
-//        return inputNames;
-//    }
-    
+
     
     
     public class JessFactHandler{

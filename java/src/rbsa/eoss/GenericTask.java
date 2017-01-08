@@ -39,6 +39,8 @@ public class GenericTask implements Callable {
     private String type;
     private boolean debug;
     private boolean saveRete = false;
+    DBManagement dbm;
+
     
     public GenericTask ( Architecture arch , String type)
     {
@@ -85,6 +87,7 @@ public class GenericTask implements Callable {
         QueryBuilder qb = res.getQueryBuilder();
         MatlabFunctions m = res.getM();
         Result resu = new Result();
+        dbm = DBManagement.getInstance();
         try{
             if (type.equalsIgnoreCase("Fast")) {
                 resu = evaluatePerformanceFast(r, arch,qb, m);
@@ -121,6 +124,17 @@ public class GenericTask implements Callable {
             resu.setRete(r);
             resu.setQueryBuilder(qb);
         }
+        
+        boolean[] b_temp = arch.getBitString();
+        String bitString = "";
+        for(boolean b:b_temp){
+            if(b){
+                bitString=bitString+"1";
+            }else{
+                bitString=bitString+"0";
+            }
+        }
+        dbm.encodeMetadata(1,bitString, resu.getScience(),resu.getCost());
         
         return resu;
     }
@@ -362,9 +376,8 @@ public class GenericTask implements Callable {
                 if (Params.req_mode.equalsIgnoreCase("FUZZY-ATTRIBUTES") || Params.req_mode.equalsIgnoreCase("FUZZY-CASES"))
                     fzcost = fzcost.add((FuzzyValue)missions.get(i).getSlotValue("lifecycle-cost").javaObjectValue(r.getGlobalContext()));
             }
-            
-            
-            
+
+            dbm.encodeData(1,"cost",r,qb);
             
             res.setCost(cost);
             res.setFuzzy_cost(fzcost);
@@ -814,29 +827,7 @@ public class GenericTask implements Callable {
 
 
 
-
-
-
-            DBManagement dbm = new DBManagement();
-            dbm.createNewDB();
-            
-            ArrayList<String> colNames = new ArrayList<>();
-            colNames.add("performanceData");
-            colNames.add("costData");
-            dbm.setCollectionNames(colNames);
-            dbm.createNewCollections();
-            
-            boolean[] b_temp = arch.getBitString();
-            String bitString = "";
-            for(boolean b:b_temp){
-                if(b){
-                    bitString=bitString+"1";
-                }else{
-                    bitString=bitString+"0";
-                }
-            }
-            dbm.encodeMetadata(33,bitString);
-            dbm.encodeData("performanceData",r,qb);
+            dbm.encodeData(1,"science",r,qb);
             
             
             
