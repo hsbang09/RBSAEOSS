@@ -436,6 +436,33 @@ public class ArchitectureEvaluator {
         else 
             return arch.getResult();
     }
+    
+    public Result evaluateArchitecture(Architecture arch, String mode, int archID)
+    {
+        if(arch.getResult().getScience()==-1){ //not yet evaluated
+            GenericTask t;
+            t = new GenericTask( arch , mode, archID);
+            
+
+            //ArrayList<Future<Result>> futures = new ArrayList<Future<Result>>();
+            //tpe.execute(t);
+            futures.clear();
+            futures.add(tpe.submit(t));
+            Result resu = null;
+            try {
+                resu = futures.get(0).get();
+                ArchitectureEvaluator.getInstance().pushResult(resu);
+            }catch (Exception e) {
+                System.out.println(e.getClass() + " : " + e.getMessage());
+            }
+            return resu;
+        }
+        else 
+            return arch.getResult();
+    }    
+    
+    
+    
     public void evalMinMax() {
        
         Architecture max_arch = ArchitectureGenerator.getInstance().getMaxArch2();

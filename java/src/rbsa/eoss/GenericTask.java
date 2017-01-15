@@ -39,6 +39,7 @@ public class GenericTask implements Callable {
     private String type;
     private boolean debug;
     private boolean saveRete = false;
+    private int archID;
     DBManagement dbm;
 
     
@@ -63,6 +64,17 @@ public class GenericTask implements Callable {
         else
             debug = false;
     }
+    public GenericTask ( Architecture arch , String type, int archID)
+    {
+        this.archID = archID;
+        this.arch = arch;
+        this.type = type;
+        //if (type.equalsIgnoreCase("Slow") || arch.getEval_mode().equalsIgnoreCase("DEBUG"))
+        if (arch.getEval_mode().equalsIgnoreCase("DEBUG")) 
+            debug = true;
+        else
+            debug = false;
+    }    
    
     public void getResource() {
         res = ArchitectureEvaluator.getInstance().getResourcePool().getResource();
@@ -134,7 +146,7 @@ public class GenericTask implements Callable {
                 bitString=bitString+"0";
             }
         }
-        dbm.encodeMetadata(1,bitString, resu.getScience(),resu.getCost());
+        dbm.encodeMetadata(archID,bitString, resu.getScience(),resu.getCost());
         
         return resu;
     }
@@ -377,7 +389,7 @@ public class GenericTask implements Callable {
                     fzcost = fzcost.add((FuzzyValue)missions.get(i).getSlotValue("lifecycle-cost").javaObjectValue(r.getGlobalContext()));
             }
 
-            dbm.encodeData(1,"cost",r,qb);
+            dbm.encodeData(archID,"cost",r,qb);
             
             res.setCost(cost);
             res.setFuzzy_cost(fzcost);
@@ -827,8 +839,7 @@ public class GenericTask implements Callable {
 
 
 
-            dbm.encodeData(1,"science",r,qb);
-            
+            dbm.encodeData(archID,"science",r,qb);
             
             
             //////////////////////////////////////////////////////////////

@@ -23,6 +23,10 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import jess.Defrule;
 import jess.Fact;
 import jess.Rete;
 import rbsa.eoss.local.Params;
@@ -37,6 +41,7 @@ public class DBManagement {
     private MongoClient mongoClient;
     private String dbName = "EOSS_eval_data";
     private String metaDataCollectionName = "metadata";
+    private String ruleCollectionName = "jessRules";
     private ArrayList<String> dataCollectionNames;
     private static DBManagement instance = null;
 
@@ -89,20 +94,7 @@ public class DBManagement {
         if(dbExists) {
             mongoClient.getDatabase(dbName).drop();
         }
-//        mongoClient.getDatabase(dbName).drop();
     }
-    
-//    public void createNewCollections(){
-//        DB db = mongoClient.getDB(dbName);
-//        if(db.collectionExists(metaDataCollectionName)){
-//            db.getCollection(metaDataCollectionName).drop();
-//        }
-//        for(String col:this.dataCollectionNames){
-//            if(db.collectionExists(col)){
-//                db.getCollection(col).drop();
-//            }        
-//        }
-//    }
     
     
 
@@ -146,11 +138,30 @@ public class DBManagement {
                 
                 // Requested Fact had been retracted
                 if(thisFact==null){
-                    System.out.println("Requested Fact had been retracted");
+                    // Related to the launch vehicle selection during cost calculation
+                    System.out.println("Requested Fact had been retracted"); 
                     factsEncoded.add(factsToEncode.get(0));
                     factsToEncode.remove(0);
                     cnt++;
                     continue;
+                } else if(thisFact.getName().equals("DATABASE::Instrument")){
+                    jess.Value slotVal = thisFact.getSlotValue("Name");
+                    String instrumentName = slotVal.stringValue(r.getGlobalContext());                    
+                    if(this.QueryExists("science.DATABASE.Instrument","Name",instrumentName)){
+                        // Remove the encoded fact from the list
+                        factsToEncode.remove(0);
+                        factsEncoded.add(thisFact.getFactId());
+                        continue;
+                    }
+                } else if(thisFact.getName().equals("DATABASE::Launch-vehicle")){
+                    jess.Value slotVal = thisFact.getSlotValue("id");
+                    String lvName = slotVal.stringValue(r.getGlobalContext());                    
+                    if(this.QueryExists("cost.DATABASE.Launch_vehicle","id",lvName)){
+                        // Remove the encoded fact from the list
+                        factsToEncode.remove(0);
+                        factsEncoded.add(thisFact.getFactId());
+                        continue;
+                    }
                 }
                 
                 // Encode the fact
@@ -177,7 +188,6 @@ public class DBManagement {
                 cnt++;
                 if(cnt>3000){break;}
             }
-            System.out.println(factsEncoded.size());
 
         }catch(Exception e){
             e.printStackTrace();
@@ -244,31 +254,108 @@ public class DBManagement {
         return doc;
     }
     
-    public void makeQuery(){
+    
+    
+    public void encodeRules(){
+        
+        HashMap<Integer,String> rules_id_to_name = Params.rules_IDtoName_map;
+        HashMap<String,Integer> rules_name_to_id = Params.rules_NametoID_Map;
+        HashMap<String,Defrule> rules = Params.rules_defrule_map;
         
         MongoDatabase Mdb = mongoClient.getDatabase(dbName);
-        MongoCollection col = Mdb.getCollection("science.MANIFEST.Mission");
-        FindIterable found = col.find(
-                and(
-                    eq("factName","MANIFEST::Mission"),
-                    gte("fraction-sunlight",0.7)
-                ));
-        
-//        Example:
-//        col.find(and(gte("stars", 2), lt("stars", 5), eq("categories", "Bakery")));
+        MongoCollection col = Mdb.getCollection(this.ruleCollectionName);
 
-        found.projection(fields(
-                    include("factName","factID","module","fraction-sunlight"),
-                    exclude("_id")
-                ));
+        Set<Integer> ruleIDs = rules_id_to_name.keySet();
+        Iterator<Integer> iter = ruleIDs.iterator();
         
-        MongoCursor iter = found.iterator();
-        while(iter.hasNext()){
-            Document doc = (Document) iter.next();
-            System.out.println(doc.get("fraction-sunlight").getClass().toString());
-            System.out.println(doc.toString());
+        try{
+            while(iter.hasNext()){
+                
+                int id = iter.next();
+                String ruleName = rules_id_to_name.get(id);
+                Defrule defrule = rules.get(ruleName);
+                
+                String module = ruleName.split("::")[0];
+                                
+                // Encode the fact
+                org.bson.Document doc = new org.bson.Document();
+                
+                doc.append("ruleID",id)
+                    .append("ruleName",ruleName)
+                    .append("module",module);
+                col.insertOne(doc);  
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }    
+    
+    
+    
+    
+    
+    
+    
+    public void makeQuery(){
+        
+//        MongoDatabase Mdb = mongoClient.getDatabase(dbName);
+//        MongoCollection col = Mdb.getCollection("science.MANIFEST.Mission");
+//        FindIterable found = col.find(
+//                and(
+//                    eq("factName","MANIFEST::Mission"),
+//                    gte("fraction-sunlight",0.7)
+//                ));
+//        
+////        Example:
+////        col.find(and(gte("stars", 2), lt("stars", 5), eq("categories", "Bakery")));
+//
+//        found.projection(fields(
+//                    include("factName","factID","module","fraction-sunlight"),
+//                    exclude("_id")
+//                ));
+//        MongoCursor iter = found.iterator();
+//        while(iter.hasNext()){
+//            Document doc = (Document) iter.next();
+//            System.out.println(doc.get("fraction-sunlight").getClass().toString());
+//            System.out.println(doc.toString());
+//        }
+    }    
+    
+    
+    public double getNArchs(){
+        MongoDatabase Mdb = mongoClient.getDatabase(dbName);
+        MongoCollection col = Mdb.getCollection(this.metaDataCollectionName);
+        return col.count();
+    }
+    
+    
+    public boolean findMatchingArch(String booleanString){
+        MongoDatabase Mdb = mongoClient.getDatabase(dbName);
+        
+        MongoCollection col = Mdb.getCollection(this.metaDataCollectionName);
+        Document filter = new Document("bitString",booleanString);
+  
+        FindIterable found = col.find(filter);
+        MongoCursor iter = found.iterator();
+        if(iter.hasNext()){
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean QueryExists(String collectionName, String slotName, String value){
+        MongoDatabase Mdb = mongoClient.getDatabase(dbName);
+        MongoCollection col = Mdb.getCollection(collectionName);
+        Document filter = new Document(slotName,value);
+        FindIterable found = col.find(filter);
+        MongoCursor iter = found.iterator();
+        return iter.hasNext();    
+    }
+    
+    
+    
+    
     
     /**
      * Makes a query from the database
@@ -281,7 +368,7 @@ public class DBManagement {
      * @param valueTypes: Types of values. Valid inputs are: Integer, Double, String
      */
     public void makeQuery(String collectionPrefix, String factName, ArrayList<String> slots, ArrayList<String> conditions, 
-            ArrayList<String> values, ArrayList<String> valueTypes){
+                            ArrayList<String> values, ArrayList<String> valueTypes){
         
         MongoDatabase Mdb = mongoClient.getDatabase(dbName);
         
