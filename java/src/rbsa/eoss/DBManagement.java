@@ -14,6 +14,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBList;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.DBCursor;
+import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.FindIterable;
 import org.bson.Document;
@@ -39,7 +40,8 @@ import rbsa.eoss.local.Params;
 public class DBManagement {
     
     private MongoClient mongoClient;
-    private String dbName = "EOSS_eval_data";
+//    private String dbName = "EOSS_eval_data";
+    private String dbName = "rbsa_eoss";
     private String metaDataCollectionName = "metadata";
     private String ruleCollectionName = "jessRules";
     private ArrayList<String> dataCollectionNames;
@@ -48,7 +50,10 @@ public class DBManagement {
     
     public DBManagement(){
         try{            
-            mongoClient = new MongoClient( "localhost" , 27017 );
+//            mongoClient = new MongoClient( "localhost" , 27017 );
+            MongoClientURI uri = new MongoClientURI("mongodb://bang:qkdgustmd@ds145828.mlab.com:45828/rbsa_eoss");
+            mongoClient = new MongoClient(uri);
+            
             dataCollectionNames = new ArrayList<>();
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -74,9 +79,6 @@ public class DBManagement {
         return instance;
     }
 
-
-    
-    
     
 
     public void addNewCollection(String colName){
@@ -328,6 +330,19 @@ public class DBManagement {
         MongoCollection col = Mdb.getCollection(this.metaDataCollectionName);
         return col.count();
     }
+    
+    
+    public void getClassOfSlot(String collectionName, String slotName){
+        MongoDatabase Mdb = mongoClient.getDatabase(dbName);
+        
+        MongoCollection col = Mdb.getCollection(collectionName);
+  
+        FindIterable found = col.find();
+        MongoCursor iter = found.iterator();
+        org.bson.Document doc = (org.bson.Document) iter.next();
+        System.out.println(doc.get(slotName).getClass().toString());
+        
+    }    
     
     
     public boolean findMatchingArch(String booleanString){

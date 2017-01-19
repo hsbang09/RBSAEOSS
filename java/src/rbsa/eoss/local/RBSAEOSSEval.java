@@ -49,7 +49,9 @@ public class RBSAEOSSEval {
 //        dbm.createNewDB();
 //        dbm.encodeRules();
 
-        
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// Evaluate single architecture ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////        
@@ -82,6 +84,7 @@ public class RBSAEOSSEval {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
         // Read in a csv file and evaluate the architectures
         String line = "";
         String splitBy = ",";
@@ -107,7 +110,7 @@ public class RBSAEOSSEval {
         
         
         int numArchs = (int) dbm.getNArchs();
-        for(int i=0;i<15;i++){
+        for(int i=0;i<30;i++){
             int archID = numArchs + i + 1;
             String bitString = bitStrings.get(archID-1);
             Architecture architecture = new Architecture(bitString,1);
@@ -195,10 +198,6 @@ public class RBSAEOSSEval {
 //////////////////////////// Make Queries ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-    
 //    Query Data    
 
 //    ArrayList<String> slots = new ArrayList<>();
