@@ -231,15 +231,8 @@ public class DBManagement {
                     if(!slotVal_string.equals("nil")){
                         // If the value is nil then don't save it in the DB
                         if(slotVal.isNumeric(r.getGlobalContext())){
-                            if(slotVal_string.contains(".")){ 
-                                // float
-                                double slotVal_double = slotVal.floatValue(r.getGlobalContext());
-                                doc.append(slot,slotVal_double);
-                            }else{ 
-                                // integer
-                                int slotVal_int = slotVal.intValue(r.getGlobalContext());
-                                doc.append(slot,slotVal_int);
-                            }
+                            double slotVal_double = slotVal.floatValue(r.getGlobalContext());
+                            doc.append(slot,slotVal_double);
                         }else{
                             // Save as string
                             String slotVal_string2 = slotVal.stringValue(r.getGlobalContext());
@@ -380,7 +373,7 @@ public class DBManagement {
      * @param slots: Names of the slots to be used in the filter
      * @param conditions: Equality and inequality signs. Valid input are: gt, lt, gte, lte, eq
      * @param values: Values to be compared.
-     * @param valueTypes: Types of values. Valid inputs are: Integer, Double, String
+     * @param valueTypes: Types of values. Valid inputs are: Double, String
      */
     public void makeQuery(String collectionPrefix, String factName, ArrayList<String> slots, ArrayList<String> conditions, 
                             ArrayList<String> values, ArrayList<String> valueTypes){
@@ -401,9 +394,6 @@ public class DBManagement {
                 if(valType.equals("String")){
                     filter.append(slotName,val);
                 }
-                else if(valType.equals("Integer")){
-                    filter.append(slotName, Integer.parseInt(val));
-                }
                 else if(valType.equals("Double")){
                     filter.append(slotName, Double.parseDouble(val));
                 }
@@ -411,9 +401,6 @@ public class DBManagement {
             else if(cond.equals("gt") || cond.equals("gte") || cond.equals("lt") || cond.equals("lte")){
                 if(valType.equals("String")){
                     filter.append(slotName, new Document("$"+cond,val));
-                }
-                else if(valType.equals("Integer")){
-                    filter.append(slotName, new Document("$"+cond,Integer.parseInt(val)));
                 }
                 else if(valType.equals("Double")){
                     filter.append(slotName, new Document("$"+cond,Double.parseDouble(val)));
