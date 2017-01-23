@@ -105,7 +105,7 @@ public class DBManagement {
         MongoCollection col = Mdb.getCollection(metaDataCollectionName);
         col.insertOne(
                 new Document()
-                    .append("ArchID", ArchID)
+                    .append("ArchID", (double) ArchID)
                     .append("bitString",bitString)
                     .append("science", science)
                     .append("cost",cost)
@@ -202,9 +202,9 @@ public class DBManagement {
         org.bson.Document doc = new org.bson.Document();
         
         try{
-            doc.append("ArchID",ArchID);
+            doc.append("ArchID", (double) ArchID);
             doc.append("factName", f.getName());
-            doc.append("factID",f.getFactId());
+            doc.append("factID", (double) f.getFactId());
             doc.append("module", f.getModule());            
         
             jess.Deftemplate factTemplate = f.getDeftemplate();
