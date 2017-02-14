@@ -686,21 +686,12 @@ public class GenericTask implements Callable {
             
             //r.eval("(watch rules)");
             
-            r.setFocus("MANIFEST2");
+            r.setFocus("MANIFEST0");
             r.run();
             
             r.setFocus( "MANIFEST" );
             r.run();
-            //System.out.println("Manifest");
             
-           /*
-            Fact missionFact = qb.makeQuery("CAPABILITIES::can-measure (instrument ACE_LID)").get(0);
-            factHistoryAnalyzer fha = new factHistoryAnalyzer(missionFact,"characteristic-orbit",r,qb);
-            
-            System.out.println(fha.getRelevantRule());
-            System.out.println(fha.getRuleAnalyzer().getActionsRelatedToFinalVariable("characteristic-orbit").get("?m")[0]);
-            System.out.println(fha.getRuleAnalyzer().generateExplanation("characteristic-orbit"));
-            */
             r.setFocus( "CAPABILITIES" );
             r.run();
             //System.out.println("Capas");

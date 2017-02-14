@@ -112,7 +112,7 @@ public class RBSAEOSSEval {
         
 //        int numArchs = (int) dbm.getNArchs();
         int numArchs = 0;
-        for(int i=0;i<10;i++){
+        for(int i=0;i<1;i++){
             int archID = numArchs + i + 1;
             String bitString = bitStrings.get(archID-1);
             Architecture architecture = new Architecture(bitString,1);

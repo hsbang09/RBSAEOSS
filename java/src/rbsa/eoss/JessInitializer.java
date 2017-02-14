@@ -366,7 +366,6 @@ public class JessInitializer {
             }
             GlobalVariables.defineInstrument(attribs_to_keys,keys_to_attribs,attribs_to_types,attribSet);
             
-            call = call.concat("(slot inherited)");
             call = call.concat(")");
             call2 = call2.concat(")");
             r.eval(call);
@@ -1235,7 +1234,7 @@ public class JessInitializer {
                 
                 ruleName = "CAPABILITIES::" + instrument + "-measurements";
                 String call2 = "(defrule CAPABILITIES::" + instrument + "-measurements " + "?this <- (CAPABILITIES::Manifested-instrument  (Name ?ins&" + instrument
-                         +  ") (Id ?id) (flies-in ?miss) (Intent ?int) (orbit-string ?orb) (Spectral-region ?sr) (orbit-type ?typ) (orbit-altitude# ?h) (orbit-inclination ?inc) (orbit-RAAN ?raan) (orbit-anomaly# ?ano) (Illumination ?il) (inherited ?iht&no) (factHistory ?fh1)) " 
+                         +  ") (Id ?id) (flies-in ?miss) (Intent ?int) (orbit-string ?orb) (Spectral-region ?sr) (orbit-type ?typ) (orbit-altitude# ?h) (orbit-inclination ?inc) (orbit-RAAN ?raan) (orbit-anomaly# ?ano) (Illumination ?il) (factHistory ?fh1)) " 
                          + " ?this2 <- (CAPABILITIES::can-measure (instrument ?ins) (in-orbit ?orb) (can-take-measurements yes) (data-rate-duty-cycle# ?dc-d) (power-duty-cycle# ?dc-p) (factHistory ?fh2)) => " 
                          + " (if (and (numberp ?dc-d) (numberp ?dc-p)) then (bind ?*science-multiplier* (min ?dc-d ?dc-p)) else (bind ?*science-multiplier* 1.0)) " 
                         + "(assert (CAPABILITIES::resource-limitations (data-rate-duty-cycle# ?dc-d) (power-duty-cycle# ?dc-p)"
@@ -1294,7 +1293,7 @@ public class JessInitializer {
                 call2 = call2 + "(assert (SYNERGIES::cross-registered (measurements " + list_of_measurements + " ) (degree-of-cross-registration instrument) (platform ?id  )"
                         + "(factHistory (str-cat \"{R\" (?*rulesMap* get "+ ruleName +") \" A\" (call ?this getFactId) \" A\" (call ?this2 getFactId) \"}\"))"
                         + "))";
-                call2 = call2 + "(modify ?this (measurement-ids " + list_of_measurements + ") (inherited yes)"
+                call2 = call2 + "(modify ?this (measurement-ids " + list_of_measurements + ")"
                         + "(factHistory (str-cat \"{R\" (?*rulesMap* get "+ ruleName +") \" \" ?fh1 \" S\" (call ?this2 getFactId) \"}\"))"
                         + "))";
                 r.eval(call2);
