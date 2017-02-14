@@ -40,7 +40,7 @@ public class GenericTask implements Callable {
     private boolean debug;
     private boolean saveRete = false;
     private int archID;
-    DBManagement dbm;
+//    DBManagement dbm;
 
     
     public GenericTask ( Architecture arch , String type)
@@ -99,7 +99,7 @@ public class GenericTask implements Callable {
         QueryBuilder qb = res.getQueryBuilder();
         MatlabFunctions m = res.getM();
         Result resu = new Result();
-        dbm = DBManagement.getInstance();
+//        dbm = DBManagement.getInstance();
         try{
             if (type.equalsIgnoreCase("Fast")) {
                 resu = evaluatePerformanceFast(r, arch,qb, m);
@@ -146,7 +146,7 @@ public class GenericTask implements Callable {
                 bitString=bitString+"0";
             }
         }
-        dbm.encodeMetadata(archID,bitString, resu.getScience(),resu.getCost());
+//        dbm.encodeMetadata(archID,bitString, resu.getScience(),resu.getCost());
         
         return resu;
     }
@@ -389,7 +389,7 @@ public class GenericTask implements Callable {
                     fzcost = fzcost.add((FuzzyValue)missions.get(i).getSlotValue("lifecycle-cost").javaObjectValue(r.getGlobalContext()));
             }
 
-            dbm.encodeData(archID,"cost",r,qb);
+//            dbm.encodeData(archID,"cost",r,qb);
             
             res.setCost(cost);
             res.setFuzzy_cost(fzcost);
@@ -839,7 +839,7 @@ public class GenericTask implements Callable {
 
 
 
-            dbm.encodeData(archID,"science",r,qb);
+//            dbm.encodeData(archID,"science",r,qb);
             
             
             //////////////////////////////////////////////////////////////

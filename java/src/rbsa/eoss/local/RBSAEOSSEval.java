@@ -44,7 +44,7 @@ public class RBSAEOSSEval {
         AE.init(1);        
         
         // Configure the database
-        DBManagement dbm = new DBManagement();
+//        DBManagement dbm = new DBManagement();
         // Initialize the database - do it only once
 //        dbm.createNewDB();
 //        dbm.encodeRules();
@@ -84,6 +84,7 @@ public class RBSAEOSSEval {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+        long t0 = System.currentTimeMillis();
 
         // Read in a csv file and evaluate the architectures
         String line = "";
@@ -109,8 +110,9 @@ public class RBSAEOSSEval {
         }
         
         
-        int numArchs = (int) dbm.getNArchs();
-        for(int i=0;i<50;i++){
+//        int numArchs = (int) dbm.getNArchs();
+        int numArchs = 0;
+        for(int i=0;i<10;i++){
             int archID = numArchs + i + 1;
             String bitString = bitStrings.get(archID-1);
             Architecture architecture = new Architecture(bitString,1);
@@ -126,7 +128,8 @@ public class RBSAEOSSEval {
         
         
 
-
+        long t1 = System.currentTimeMillis();
+        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
