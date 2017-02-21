@@ -355,7 +355,7 @@ public class GenericTask implements Callable {
     private void evaluateCost(Rete r, Architecture arch, Result res, QueryBuilder qb, MatlabFunctions m) {
         try {
 
-            r.setFocus("MANIFEST2");
+            r.setFocus("MANIFEST0");
             r.run();
 
             r.eval("(focus MANIFEST)");

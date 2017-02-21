@@ -56,27 +56,40 @@ public class RBSAEOSSEval {
 //////////////////////////////// Evaluate single architecture ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////        
         
-//        // Input a new architecture design
-//        // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
-//        ArrayList<String> input_arch = new ArrayList<>();
-//        String orbit_1 = "ALH"; input_arch.add(orbit_1);
-//        String orbit_2 = "KG"; input_arch.add(orbit_2);
-//        String orbit_3 = ""; input_arch.add(orbit_3);
-//        String orbit_4 = ""; input_arch.add(orbit_4);
-//        String orbit_5 = "BHK"; input_arch.add(orbit_5);
-//
-//        // Generate a new architecture
-//        Architecture architecture = AG.defineNewArch(input_arch);
-//        
-//        
-//        // Evaluate the architecture
-//        Result result = AE.evaluateArchitecture(architecture,"Slow");
-//        
-//        // Save the score and the cost
-//        double cost = result.getCost();
-//        double science = result.getScience();
-//        
-//        System.out.println("Performance Score: " + science + ", Cost: " + cost);
+
+        long t0 = System.currentTimeMillis();
+
+
+        // Input a new architecture design
+        // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
+        ArrayList<String> input_arch = new ArrayList<>();
+        String orbit_1 = "ABH"; input_arch.add(orbit_1);
+        String orbit_2 = "KG"; input_arch.add(orbit_2);
+        String orbit_3 = "A"; input_arch.add(orbit_3);
+        String orbit_4 = "ALE"; input_arch.add(orbit_4);
+        String orbit_5 = "BE"; input_arch.add(orbit_5);
+//        String orbit_1 = "ABCDLH"; input_arch.add(orbit_1);
+//        String orbit_2 = "AKDFG"; input_arch.add(orbit_2);
+//        String orbit_3 = "ALBGH"; input_arch.add(orbit_3);
+//        String orbit_4 = "ADCLE"; input_arch.add(orbit_4);
+//        String orbit_5 = "BHKELJ"; input_arch.add(orbit_5);
+        // Generate a new architecture
+        Architecture architecture = AG.defineNewArch(input_arch);
+        
+        
+        // Evaluate the architecture
+        Result result = AE.evaluateArchitecture(architecture,"Slow");
+        
+        // Save the score and the cost
+        double cost = result.getCost();
+        double science = result.getScience();
+        
+        System.out.println("Performance Score: " + science + ", Cost: " + cost);
+        
+        
+        long t1 = System.currentTimeMillis();
+        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
+        
         
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,52 +97,52 @@ public class RBSAEOSSEval {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        long t0 = System.currentTimeMillis();
-
-        // Read in a csv file and evaluate the architectures
-        String line = "";
-        String splitBy = ",";
-
-        ArrayList<String> bitStrings = new ArrayList<>();
-        String resultPath = "/Users/bang/workspace/RBSAEOSS-Eval-netbeans/results/EOSS_data.csv";
-        
-        try (BufferedReader br = new BufferedReader(new FileReader(resultPath))) {
-//            skip header
-//            line = br.readLine();
-        	
-            while ((line = br.readLine()) != null) {
-                // use comma as separator
-                String[] tmp = line.split(splitBy);
-                String bitString = tmp[0];
-                bitStrings.add(bitString);
-                double science = Double.parseDouble(tmp[1]);
-                double cost = Double.parseDouble(tmp[2]);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        
-//        int numArchs = (int) dbm.getNArchs();
-        int numArchs = 0;
-        for(int i=0;i<1;i++){
-            int archID = numArchs + i + 1;
-            String bitString = bitStrings.get(archID-1);
-            Architecture architecture = new Architecture(bitString,1);
-
-            // Evaluate the architecture
-            Result result = AE.evaluateArchitecture(architecture,"Slow",archID);
-            // Save the score and the cost
-            double cost = result.getCost();
-            double science = result.getScience();
-
-            System.out.println("ArchID: "+ archID + ", Performance Score: " + science + ", Cost: " + cost);        
-        }
-        
-        
-
-        long t1 = System.currentTimeMillis();
-        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
+//        long t0 = System.currentTimeMillis();
+//
+//        // Read in a csv file and evaluate the architectures
+//        String line = "";
+//        String splitBy = ",";
+//
+//        ArrayList<String> bitStrings = new ArrayList<>();
+//        String resultPath = "/Users/bang/workspace/RBSAEOSS-Eval-netbeans/results/EOSS_data.csv";
+//        
+//        try (BufferedReader br = new BufferedReader(new FileReader(resultPath))) {
+////            skip header
+////            line = br.readLine();
+//        	
+//            while ((line = br.readLine()) != null) {
+//                // use comma as separator
+//                String[] tmp = line.split(splitBy);
+//                String bitString = tmp[0];
+//                bitStrings.add(bitString);
+//                double science = Double.parseDouble(tmp[1]);
+//                double cost = Double.parseDouble(tmp[2]);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        
+//        
+////        int numArchs = (int) dbm.getNArchs();
+//        int numArchs = 0;
+//        for(int i=0;i<1;i++){
+//            int archID = numArchs + i + 1;
+//            String bitString = bitStrings.get(archID-1);
+//            Architecture architecture = new Architecture(bitString,1);
+//
+//            // Evaluate the architecture
+//            Result result = AE.evaluateArchitecture(architecture,"Slow",archID);
+//            // Save the score and the cost
+//            double cost = result.getCost();
+//            double science = result.getScience();
+//
+//            System.out.println("ArchID: "+ archID + ", Performance Score: " + science + ", Cost: " + cost);        
+//        }
+//        
+//        
+//
+//        long t1 = System.currentTimeMillis();
+//        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
