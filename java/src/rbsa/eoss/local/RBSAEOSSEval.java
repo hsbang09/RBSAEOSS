@@ -60,24 +60,24 @@ public class RBSAEOSSEval {
         long t0 = System.currentTimeMillis();
 
 
-        // Input a new architecture design
-        // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
-        ArrayList<String> input_arch = new ArrayList<>();
-        String orbit_1 = "ABH"; input_arch.add(orbit_1);
-        String orbit_2 = "KG"; input_arch.add(orbit_2);
-        String orbit_3 = "A"; input_arch.add(orbit_3);
-        String orbit_4 = "ALE"; input_arch.add(orbit_4);
-        String orbit_5 = "BE"; input_arch.add(orbit_5);
-//        String orbit_1 = "ABCDLH"; input_arch.add(orbit_1);
-//        String orbit_2 = "AKDFG"; input_arch.add(orbit_2);
-//        String orbit_3 = "ALBGH"; input_arch.add(orbit_3);
-//        String orbit_4 = "ADCLE"; input_arch.add(orbit_4);
-//        String orbit_5 = "BHKELJ"; input_arch.add(orbit_5);
-        // Generate a new architecture
-        Architecture architecture = AG.defineNewArch(input_arch);
+//        // Input a new architecture design
+//        // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
+//        ArrayList<String> input_arch = new ArrayList<>();
+//        String orbit_1 = "ABH"; input_arch.add(orbit_1);
+//        String orbit_2 = "KG"; input_arch.add(orbit_2);
+//        String orbit_3 = "A"; input_arch.add(orbit_3);
+//        String orbit_4 = "ALE"; input_arch.add(orbit_4);
+//        String orbit_5 = "BE"; input_arch.add(orbit_5);
+////        String orbit_1 = "ABCDLH"; input_arch.add(orbit_1);
+////        String orbit_2 = "AKDFG"; input_arch.add(orbit_2);
+////        String orbit_3 = "ALBGH"; input_arch.add(orbit_3);
+////        String orbit_4 = "ADCLE"; input_arch.add(orbit_4);
+////        String orbit_5 = "BHKELJ"; input_arch.add(orbit_5);
+//        // Generate a new architecture
+//        Architecture architecture = AG.defineNewArch(input_arch);
         
 
-//        Architecture architecture = AG.getMaxArch2();
+        Architecture architecture = AG.getMaxArch2();
 
         
         // Evaluate the architecture
