@@ -132,4 +132,10 @@
     )
 
 
+(defrule CAPABILITIES-REMOVE-OVERLAPS::cross-registered-remove-overlaps
+    ?s1 <- (SYNERGIES::cross-registered (measurements $?m1) (factHistory ?f1))
+    (SYNERGIES::cross-registered (measurements $?m1) (factHistory ?f2&~?f1))
+    =>
+    (retract ?s1)
+)
 

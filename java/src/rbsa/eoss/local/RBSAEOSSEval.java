@@ -76,6 +76,9 @@ public class RBSAEOSSEval {
         // Generate a new architecture
         Architecture architecture = AG.defineNewArch(input_arch);
         
+
+//        Architecture architecture = AG.getMaxArch2();
+
         
         // Evaluate the architecture
         Result result = AE.evaluateArchitecture(architecture,"Slow");

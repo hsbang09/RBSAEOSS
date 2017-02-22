@@ -284,9 +284,7 @@ public class JessInitializer {
                 String str_id = row[2].getContents();
                 int id = Integer.parseInt(str_id);
                 String type = row[3].getContents();
-                
-                
-                
+                                
                 attribs_to_keys.put(name,id);
                 keys_to_attribs.put(id,name);
                 attribs_to_types.put(name,type);

@@ -688,13 +688,21 @@ public class GenericTask implements Callable {
             
             r.setFocus("MANIFEST0");
             r.run();
-            
+            //System.out.println("manifest0");
             r.setFocus( "MANIFEST" );
             r.run();
-            
+            //System.out.println("manifest");
             r.setFocus( "CAPABILITIES" );
             r.run();
-            //System.out.println("Capas");
+            //System.out.println("capabilities");
+            r.setFocus("CAPABILITIES-REMOVE-OVERLAPS");
+            r.run();
+            //System.out.println("capa-remove-overlaps");
+            r.setFocus("CAPABILITIES-CROSS-REGISTER");
+            r.run();
+            
+            //System.out.println("capa-cross-regi");
+            
             r.setFocus( "SYNERGIES" );
             r.run();
             //System.out.println("Syn");
@@ -721,15 +729,16 @@ public class GenericTask implements Callable {
                     javaAssertedFactID++;
                     r.eval(call);
                 } 
-                
             }
+            
+            
             //System.out.println("Revtimes");
             r.setFocus( "ASSIMILATION2" );
             r.run();
-            
+            //System.out.println("assim2");
             r.setFocus( "ASSIMILATION" );
             r.run();
-            //System.out.println("Assim");
+            //System.out.println("assim");
             r.setFocus( "FUZZY" );
             r.run();
             //System.out.println("Fuzzy");
@@ -832,7 +841,7 @@ public class GenericTask implements Callable {
 
 //            dbm.encodeData(archID,"science",r,qb);
             
-            
+
             //////////////////////////////////////////////////////////////
             if (arch.getEval_mode().equalsIgnoreCase("DEBUG")) {
                 ArrayList<Fact> partials = qb.makeQuery("REASONING::partially-satisfied");

@@ -473,7 +473,7 @@
 ;	(assert (SYNERGIES::cross-registered (measurements (str-cat $?m1 $?m2))))
 ;)
 
-(defrule CAPABILITIES::cross-register-measurements-from-cross-registered-instruments
+(defrule CAPABILITIES-CROSS-REGISTER::cross-register-measurements-from-cross-registered-instruments
 	(SYNERGIES::cross-registered-instruments (instruments $?ins) (platform ?sat) (factHistory ?fh))
 	?c <- (accumulate (bind ?str "")                        ;; initializer
                 (bind ?str (str-cat ?str " " $?m1))                    ;; action
@@ -481,7 +481,7 @@
                 (CAPABILITIES::Manifested-instrument (Name ?ins1&:(contains$ $?ins ?ins1)) (flies-in ?sat) (measurement-ids $?m1) )
 				) ;; CE
 	=>
-	(assert (SYNERGIES::cross-registered (measurements (explode$ ?c)) (degree-of-cross-registration spacecraft) (platform ?sat) (factHistory (str-cat "{R" (?*rulesMap* get CAPABILITIES::cross-register-measurements-from-cross-registered-instruments) " " ?fh "}"))))
+	(assert (SYNERGIES::cross-registered (measurements (explode$ ?c)) (degree-of-cross-registration spacecraft) (platform ?sat) (factHistory (str-cat "{R" (?*rulesMap* get CAPABILITIES-CROSS-REGISTER::cross-register-measurements-from-cross-registered-instruments) " " ?fh "}"))))
 	;(printout t ?c crlf)
 )
 
