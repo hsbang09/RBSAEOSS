@@ -195,6 +195,7 @@ public class GenericTask implements Callable {
                         fovs[i] = String.valueOf(tmp);
                     }
                     String key = arch.getNsats() + " x " + m.StringArraytoStringWith(fovs,"  ");
+                                        
                     HashMap therevtimes = (HashMap) Params.revtimes.get(key); //key: 'Global' or 'US', value Double
                     String call = "(assert (ASSIMILATION2::UPDATE-REV-TIME (parameter " +  param + ") (avg-revisit-time-global# " + therevtimes.get("Global") + ") "
                             + "(avg-revisit-time-US# " + therevtimes.get("US") + ")))";
@@ -354,6 +355,9 @@ public class GenericTask implements Callable {
     
     private void evaluateCost(Rete r, Architecture arch, Result res, QueryBuilder qb, MatlabFunctions m) {
         try {
+            
+            
+            long t0 = System.currentTimeMillis();
 
             r.setFocus("MANIFEST0");
             r.run();
@@ -364,7 +368,7 @@ public class GenericTask implements Callable {
             designSpacecraft(r,arch,qb,m);
             r.eval("(focus SAT-CONFIGURATION)");
             r.eval("(run)");
-            
+
             r.eval("(focus LV-SELECTION0)");
             r.eval("(run)");
             r.eval("(focus LV-SELECTION1)");
@@ -373,12 +377,13 @@ public class GenericTask implements Callable {
             r.eval("(run)");
             r.eval("(focus LV-SELECTION3)");
             r.eval("(run)");
-            
+
             if ((Params.req_mode.equalsIgnoreCase("FUZZY-CASES")) || (Params.req_mode.equalsIgnoreCase("FUZZY-ATTRIBUTES")))
                 r.eval("(focus FUZZY-COST-ESTIMATION)");
             else
             r.eval("(focus COST-ESTIMATION)");
             r.eval("(run)");
+            
             
             double cost = 0.0;
             FuzzyValue fzcost = new FuzzyValue("Cost", new Interval("delta",0,0),"FY04$M");
@@ -394,6 +399,7 @@ public class GenericTask implements Callable {
             res.setCost(cost);
             res.setFuzzy_cost(fzcost);
             
+
             ///////////////////////////////////////////////////////////////////
 //            long t0 = System.currentTimeMillis();
 //            r.batch(Params.critique_cost_initialize_facts_clp);
@@ -677,6 +683,10 @@ public class GenericTask implements Callable {
         Result result = new Result();
         try {
 
+            
+            long t0 = System.currentTimeMillis();
+             
+            
             r.reset();
             assertMissions(r,arch,m);           
             
@@ -687,25 +697,27 @@ public class GenericTask implements Callable {
             //r.eval("(watch rules)");
             
             r.setFocus("MANIFEST0");
-            r.run();
-            //System.out.println("manifest0");
+            r.run();            
+            
             r.setFocus( "MANIFEST" );
             r.run();
-            //System.out.println("manifest");
+
             r.setFocus( "CAPABILITIES" );
             r.run();
-            //System.out.println("capabilities");
+            
             r.setFocus("CAPABILITIES-REMOVE-OVERLAPS");
             r.run();
-            //System.out.println("capa-remove-overlaps");
+
             r.setFocus("CAPABILITIES-CROSS-REGISTER");
             r.run();
-            
-            //System.out.println("capa-cross-regi");
+  
+            r.setFocus("CAPABILITIES-GENERATE");
+            r.run();            
             
             r.setFocus( "SYNERGIES" );
             r.run();
-            //System.out.println("Syn");
+
+
             //Revisit times
             
             int javaAssertedFactID = 1;
@@ -722,6 +734,7 @@ public class GenericTask implements Callable {
                         fovs[i] = String.valueOf(tmp);
                     }
                     String key = arch.getNsats() + " x " + m.StringArraytoStringWith(fovs,"  ");
+                    
                     HashMap therevtimes = (HashMap) Params.revtimes.get(key); //key: 'Global' or 'US', value Double
                     String call = "(assert (ASSIMILATION2::UPDATE-REV-TIME (parameter " +  param + ") (avg-revisit-time-global# " + therevtimes.get("Global") + ") "
                             + "(avg-revisit-time-US# " + therevtimes.get("US") + ")"
@@ -731,23 +744,22 @@ public class GenericTask implements Callable {
                 } 
             }
             
-            
-            //System.out.println("Revtimes");
+
             r.setFocus( "ASSIMILATION2" );
             r.run();
-            //System.out.println("assim2");
+
             r.setFocus( "ASSIMILATION" );
             r.run();
-            //System.out.println("assim");
+
             r.setFocus( "FUZZY" );
             r.run();
-            //System.out.println("Fuzzy");
+
             r.setFocus( "SYNERGIES" );
             r.run();
-            //System.out.println("Syn2");
+
             r.setFocus( "SYNERGIES-ACROSS-ORBITS" );
             r.run();
-            //System.out.println("Syn3");
+
             if ((Params.req_mode.equalsIgnoreCase("FUZZY-CASES")) || (Params.req_mode.equalsIgnoreCase("FUZZY-ATTRIBUTES")))
                 r.setFocus( "FUZZY-REQUIREMENTS" );
             else
@@ -765,6 +777,7 @@ public class GenericTask implements Callable {
             } else if ((Params.req_mode.equalsIgnoreCase("CRISP-CASES")) || (Params.req_mode.equalsIgnoreCase("FUZZY-CASES"))){
                 result = aggregate_performance_score(r);
             }
+            
 
             //////////////////////////////////////////////////////////////
 /*
@@ -833,10 +846,6 @@ public class GenericTask implements Callable {
 //                    dh.printDialogueHistory();
 //                }
 //            }
-
-            
-
-
 
 
 //            dbm.encodeData(archID,"science",r,qb);
