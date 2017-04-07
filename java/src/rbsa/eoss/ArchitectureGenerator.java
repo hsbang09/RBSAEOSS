@@ -342,10 +342,12 @@ public class ArchitectureGenerator {
     
     public Architecture defineNewArch(ArrayList<String> input_arch){
         
-        HashMap<String,String[]> map5 = new HashMap<String,String[]>();
+        HashMap<String,String[]> map = new HashMap<String,String[]>();
         String[] instrument_list = Params.instrument_list;
         String[] orbit_list = Params.orbit_list;
+        
         String relabeled_instrument_list = "ABCDEFGHIJKL";
+        
         for(int j=0;j<input_arch.size();j++){
             String payloads = input_arch.get(j);
             String[] instruments = new String[payloads.length()];
@@ -358,10 +360,10 @@ public class ArchitectureGenerator {
                 }
                 instruments[i] = instrument_list[index];
             }
-            map5.put(orbit_list[j], instruments);
+            map.put(orbit_list[j], instruments);
         }
 
-        Architecture arch = new Architecture(map5,1);
+        Architecture arch = new Architecture(map,1);
         return arch;
     }
     

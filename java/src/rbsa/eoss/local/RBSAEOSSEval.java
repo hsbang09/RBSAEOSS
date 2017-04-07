@@ -7,7 +7,10 @@ package rbsa.eoss.local;
 
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import rbsa.eoss.Architecture;
 import rbsa.eoss.ArchitectureEvaluator;
 import rbsa.eoss.ArchitectureGenerator;
@@ -18,7 +21,10 @@ import rbsa.eoss.ResultManager;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 import java.util.Stack;
 import rbsa.eoss.DBManagement;
 
@@ -40,16 +46,9 @@ public class RBSAEOSSEval {
         ResultManager RM = ResultManager.getInstance();
         Params params = null;
         String search_clps = "";
+        
         params = new Params( path, "FUZZY-ATTRIBUTES", "test","normal",search_clps);//FUZZY or CRISP
         AE.init(1);        
-        
-        // Configure the database
-//        DBManagement dbm = new DBManagement();
-        // Initialize the database - do it only once
-//        dbm.createNewDB();
-//        dbm.encodeRules();
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,27 +57,18 @@ public class RBSAEOSSEval {
         
 
         long t0 = System.currentTimeMillis();
-
-
+        
         // Input a new architecture design
         // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
         ArrayList<String> input_arch = new ArrayList<>();
-        String orbit_1 = "ABH"; input_arch.add(orbit_1);
-        String orbit_2 = "KG"; input_arch.add(orbit_2);
-        String orbit_3 = "A"; input_arch.add(orbit_3);
-        String orbit_4 = "ALE"; input_arch.add(orbit_4);
-        String orbit_5 = "BE"; input_arch.add(orbit_5);
-//        String orbit_1 = "ABCDLH"; input_arch.add(orbit_1);
-//        String orbit_2 = "AKDFG"; input_arch.add(orbit_2);
-//        String orbit_3 = "ALBGH"; input_arch.add(orbit_3);
-//        String orbit_4 = "ADCLE"; input_arch.add(orbit_4);
-//        String orbit_5 = "BHKELJ"; input_arch.add(orbit_5);
+        String orbit_1 = "AB"; input_arch.add(orbit_1);
+        String orbit_2 = "G"; input_arch.add(orbit_2);
+        String orbit_3 = "AG"; input_arch.add(orbit_3);
+        String orbit_4 = "D"; input_arch.add(orbit_4);
+        String orbit_5 = ""; input_arch.add(orbit_5);
+
         // Generate a new architecture
         Architecture architecture = AG.defineNewArch(input_arch);
-        
-
-//        Architecture architecture = AG.getMaxArch2();
-
         
         // Evaluate the architecture
         Result result = AE.evaluateArchitecture(architecture,"Slow");
@@ -210,12 +200,61 @@ public class RBSAEOSSEval {
 //        } catch (IOException e) {
 //            // do something
 //        }
-        
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// Print all rule names ////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//        File file = new File(path+"/results/rules.csv");
+//        
+//        
+//        
+//        
+//        try{
+//                    
+//            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+//            String printRow = "";
+//
+//            HashMap rules = Params.rules_IDtoName_map;
+//            Set idSet = rules.keySet();
+//            Iterator iter = idSet.iterator();
+//            while(iter.hasNext()){
+//                String row = "";
+//                int key = (int) iter.next();
+//                row = key + "," + Params.rules_IDtoName_map.get(key);
+//                writer.write(row + "\n");
+//            }
+//
+//            System.out.println("Done");
+//            writer.close();
+//        
+//        
+//        
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Make Queries ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
+        
+
+// Configure the database
+// DBManagement dbm = new DBManagement();
+// Initialize the database - do it only once
+// dbm.createNewDB();
+// dbm.encodeRules();
+
+
+
+
 
 //    Query Data    
 

@@ -718,10 +718,25 @@ public class GenericTask implements Callable {
             r.run();
 
 
+            
+
             //Revisit times
             
-            int javaAssertedFactID = 1;
+            // Check if all of the orbits in the original formulation are used
+            boolean[] orbits_used = new boolean[5];
+            String[] list = {"LEO-600-polar-NA","SSO-600-SSO-AM","SSO-600-SSO-DD","SSO-800-SSO-DD","SSO-800-SSO-PM"};
+            for(int i=0;i<list.length;i++){
+                orbits_used[i]=false;
+                for(String orb:Params.orbit_list){
+                    if(list[i].equalsIgnoreCase(orb)){
+                        orbits_used[i]=true;
+                        break;
+                    }
+                }
+            }
             
+
+            int javaAssertedFactID = 1;
             Iterator parameters = Params.measurements_to_instruments.keySet().iterator();
             while (parameters.hasNext()) {
                 String param = (String)parameters.next();
@@ -729,14 +744,33 @@ public class GenericTask implements Callable {
                 if (RU.getTypeName(v.type()).equalsIgnoreCase("LIST")) {
                     ValueVector thefovs = v.listValue(r.getGlobalContext());           
                     String[] fovs = new String[thefovs.size()];
+
                     for (int i = 0;i<thefovs.size();i++) {
                         int tmp = thefovs.get(i).intValue(r.getGlobalContext());
                         fovs[i] = String.valueOf(tmp);
                     }
+                    
+                    // Re-assign fovs based on the original orbit formulation
+                    if(thefovs.size()<5){
+                        String[] new_fovs = new String[5];
+                        int cnt=0;
+                        for(int i=0;i<5;i++){
+                            if(orbits_used[i]){
+                                new_fovs[i]=fovs[cnt];
+                                cnt++;
+                            }else{
+                                new_fovs[i]="-1";
+                            }
+                        }
+                        fovs = new_fovs;
+                    }
+                    
                     String key = arch.getNsats() + " x " + m.StringArraytoStringWith(fovs,"  ");
+                    if(javaAssertedFactID<100) System.out.println(key);
                     
                     HashMap therevtimes = (HashMap) Params.revtimes.get(key); //key: 'Global' or 'US', value Double
-                    String call = "(assert (ASSIMILATION2::UPDATE-REV-TIME (parameter " +  param + ") (avg-revisit-time-global# " + therevtimes.get("Global") + ") "
+                    String call = "(assert (ASSIMILATION2::UPDATE-REV-TIME (parameter " +  param + ") "
+                            + "(avg-revisit-time-global# " + therevtimes.get("Global") + ") "
                             + "(avg-revisit-time-US# " + therevtimes.get("US") + ")"
                             + "(factHistory J" + javaAssertedFactID + ")))";
                     javaAssertedFactID++;
