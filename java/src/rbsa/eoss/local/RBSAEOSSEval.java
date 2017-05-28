@@ -48,7 +48,7 @@ public class RBSAEOSSEval {
         String search_clps = "";
         
         params = new Params( path, "FUZZY-ATTRIBUTES", "test","normal",search_clps);//FUZZY or CRISP
-        AE.init(1);        
+        //AE.init(1);        
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,32 +56,34 @@ public class RBSAEOSSEval {
 //////////////////////////////////////////////////////////////////////////////////////////////////        
         
 
-        long t0 = System.currentTimeMillis();
-        
-        // Input a new architecture design
-        // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
-        ArrayList<String> input_arch = new ArrayList<>();
-        String orbit_1 = "AB"; input_arch.add(orbit_1);
-        String orbit_2 = "G"; input_arch.add(orbit_2);
-        String orbit_3 = "AG"; input_arch.add(orbit_3);
-        String orbit_4 = "D"; input_arch.add(orbit_4);
-        String orbit_5 = ""; input_arch.add(orbit_5);
-
-        // Generate a new architecture
-        Architecture architecture = AG.defineNewArch(input_arch);
-        
-        // Evaluate the architecture
-        Result result = AE.evaluateArchitecture(architecture,"Slow");
-        
-        // Save the score and the cost
-        double cost = result.getCost();
-        double science = result.getScience();
-        
-        System.out.println("Performance Score: " + science + ", Cost: " + cost);
-        
-        
-        long t1 = System.currentTimeMillis();
-        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
+//        long t0 = System.currentTimeMillis();
+//        
+//        // Input a new architecture design
+//        // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
+//        ArrayList<String> input_arch = new ArrayList<>();
+//        String orbit_1 = "ABGD"; input_arch.add(orbit_1);
+//        String orbit_2 = "G"; input_arch.add(orbit_2);
+//        String orbit_3 = "AG"; input_arch.add(orbit_3);
+//        String orbit_4 = "D"; input_arch.add(orbit_4);
+//        String orbit_5 = ""; input_arch.add(orbit_5);
+//
+//        // Generate a new architecture
+//        Architecture architecture = AG.defineNewArch(input_arch);
+//        
+//        architecture = AG.getMaxArch();
+//        
+//        // Evaluate the architecture
+//        Result result = AE.evaluateArchitecture(architecture,"Slow");
+//        
+//        // Save the score and the cost
+//        double cost = result.getCost();
+//        double science = result.getScience();
+//        
+//        System.out.println("Performance Score: " + science + ", Cost: " + cost);
+//        
+//        
+//        long t1 = System.currentTimeMillis();
+//        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
         
         
 
@@ -143,63 +145,63 @@ public class RBSAEOSSEval {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-          // Reading in the result file and writing a csv file.
-//        try{
-//            PrintWriter writer = new PrintWriter("/Users/bang/workspace/RBSAEOSS-Eval-netbeans/results/EOSS_data.csv", "UTF-8");
-//
-//            // Load the existing result file
-//            String result_path = Params.path + "/results/1.rs";
-//            Stack<Result> results;
-//            ResultCollection RC = RM.loadResultCollectionFromFile(result_path);
-//            Stack<Result> tmpResults = RC.getResults();
-//            results = new Stack<Result>();
-//            for (Result tmpResult:tmpResults){
-//                if(tmpResult.getScience()>=0.001){
-//                    results.add(tmpResult);
-//                }
-//            }
-//            int nResults = results.size();
-//            for (int i=0;i<nResults;i++){
-//                double sci = results.get(i).getScience();
-//                double cos = results.get(i).getCost();
-//                Architecture arch = results.get(i).getArch();
-//                
-//                String bitString="";
-//                for(boolean bool:arch.getBitString()){
-//                    if(bool){bitString=bitString+"1";}
-//                    else{bitString=bitString+"0";}
-//                }
-//                writer.println(bitString+","+sci+","+cos);
-//            }
-//	        
-//            result_path = Params.path + "/results/3.rs";
-//            RC = RM.loadResultCollectionFromFile(result_path);
-//            tmpResults = RC.getResults();
-//            results = new Stack<Result>();
-//            for (Result tmpResult:tmpResults){
-//                if(tmpResult.getScience()>=0.001){
-//                    results.add(tmpResult);
-//                }
-//            }
-//            nResults = results.size();
-//            for (int i=0;i<nResults;i++){
-//                double sci = results.get(i).getScience();
-//                double cos = results.get(i).getCost();
-//                Architecture arch = results.get(i).getArch();
-//                
-//                String bitString="";
-//                for(boolean bool:arch.getBitString()){
-//                    if(bool){bitString=bitString+"1";}
-//                    else{bitString=bitString+"0";}
-//                }
-//                writer.println(bitString+","+sci+","+cos);
-//            }
-//	        
-//        
-//            writer.close();
-//        } catch (IOException e) {
-//            // do something
-//        }
+        //   Reading in the result file and writing a csv file.
+        try{
+            PrintWriter writer = new PrintWriter("/Users/bang/workspace/RBSAEOSS-Eval-netbeans/results/20170404/20170404233452.csv", "UTF-8");
+
+            // Load the existing result file
+            String result_path = Params.path + "/results/20170404/2017-04-04_23-34-52_test.rs";
+            Stack<Result> results;
+            ResultCollection RC = RM.loadResultCollectionFromFile(result_path);
+            Stack<Result> tmpResults = RC.getResults();
+            results = new Stack<Result>();
+            for (Result tmpResult:tmpResults){
+                if(tmpResult.getScience()>=0.001){
+                    results.add(tmpResult);
+                }
+            }
+            int nResults = results.size();
+            for (int i=0;i<nResults;i++){
+                double sci = results.get(i).getScience();
+                double cos = results.get(i).getCost();
+                Architecture arch = results.get(i).getArch();
+                
+                String bitString="";
+                for(boolean bool:arch.getBitString()){
+                    if(bool){bitString=bitString+"1";}
+                    else{bitString=bitString+"0";}
+                }
+                writer.println(bitString+","+sci+","+cos);
+            }
+	        
+            result_path = Params.path + "/results/3.rs";
+            RC = RM.loadResultCollectionFromFile(result_path);
+            tmpResults = RC.getResults();
+            results = new Stack<Result>();
+            for (Result tmpResult:tmpResults){
+                if(tmpResult.getScience()>=0.001){
+                    results.add(tmpResult);
+                }
+            }
+            nResults = results.size();
+            for (int i=0;i<nResults;i++){
+                double sci = results.get(i).getScience();
+                double cos = results.get(i).getCost();
+                Architecture arch = results.get(i).getArch();
+                
+                String bitString="";
+                for(boolean bool:arch.getBitString()){
+                    if(bool){bitString=bitString+"1";}
+                    else{bitString=bitString+"0";}
+                }
+                writer.println(bitString+","+sci+","+cos);
+            }
+	        
+        
+            writer.close();
+        } catch (IOException e) {
+            // do something
+        }
 
 
 
