@@ -251,7 +251,7 @@ public class Params {
 
         //instrument_list[0] = "SMAP_ANT";
         ninstr = instrument_list.length;
-        MAX_TOTAL_INSTR = 2*ninstr;
+        MAX_TOTAL_INSTR = 5*ninstr;
         norb = orbit_list.length;
         instrument_indexes = new HashMap<String,Integer>();
         orbit_indexes= new HashMap<String,Integer>();
