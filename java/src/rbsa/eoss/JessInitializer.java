@@ -1230,7 +1230,7 @@ public class JessInitializer {
                          + "(copied-to-measurement-fact no)(factHistory (str-cat \"{R\" (?*rulesMap* get "+ ruleName +") \" A\" (call ?this getFactId) \"}\")))))";
                 r.eval(call);
                 
-                ruleName = "CAPABILITIES::" + instrument + "-measurements";
+                ruleName = "CAPABILITIES-GENERATE::" + instrument + "-measurements";
                 String call2 = "(defrule CAPABILITIES-GENERATE::" + instrument + "-measurements " + "?this <- (CAPABILITIES::Manifested-instrument  (Name ?ins&" + instrument
                          +  ") (Id ?id) (flies-in ?miss) (Intent ?int) (orbit-string ?orb) (Spectral-region ?sr) (orbit-type ?typ) (orbit-altitude# ?h) (orbit-inclination ?inc) (orbit-RAAN ?raan) (orbit-anomaly# ?ano) (Illumination ?il) (factHistory ?fh1)) " 
                          + " ?this2 <- (CAPABILITIES::can-measure (instrument ?ins) (in-orbit ?orb) (can-take-measurements yes) (data-rate-duty-cycle# ?dc-d) (power-duty-cycle# ?dc-p) (copied-to-measurement-fact no)(factHistory ?fh2)) => " 

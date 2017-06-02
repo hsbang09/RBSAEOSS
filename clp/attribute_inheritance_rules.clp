@@ -1,4 +1,4 @@
-﻿;; *********************************
+;; *********************************
 ;; Mission - mission inheritance
 ;; *********************************
 
@@ -427,7 +427,7 @@
 ;; Rules for synthesis of alternative mission architectures trading accuracy for spatial resolution,
 ;; temporal resolution, or vertical spatial resolution. All these missions will be declared, and
 ;; rules can be added so that only one of each can be selected
-(defrule CAPABILITIES::basic-diurnal-cycle
+(defrule CAPABILITIES-UPDATE::basic-diurnal-cycle
 ?meas<- (REQUIREMENTS::Measurement (diurnal-cycle nil) (orbit-inclination ?inc&~nil) (orbit-RAAN ?raan&~nil) (factHistory ?fh))
 =>
 (if (eq ?inc polar) then (bind ?dc variable) else (bind ?dc (eval (str-cat ?raan "-only"))))

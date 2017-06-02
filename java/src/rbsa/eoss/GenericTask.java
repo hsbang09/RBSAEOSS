@@ -712,7 +712,10 @@ public class GenericTask implements Callable {
             r.run();
   
             r.setFocus("CAPABILITIES-GENERATE");
-            r.run();            
+            r.run();         
+            
+            r.setFocus("CAPABILITIES-UPDATE");
+            r.run();
             
             r.setFocus( "SYNERGIES" );
             r.run();
