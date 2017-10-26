@@ -1,10 +1,13 @@
-(defrule CRITIQUE-COST-PRECALCULATION1::update-satellite-volume
+(defrule CRITIQUE-COST-PRECALCULATION::update-satellite-volume
+    (declare (salience 100))
     ?miss <- (MANIFEST::Mission (Name ?n) (satellite-volume# nil) (satellite-dimensions $?dimensions&:(notempty$ $?dimensions)))
     =>
     (bind ?volume (*$ ?dimensions))
     (modify ?miss (satellite-volume# ?volume)))
 
-(defrule CRITIQUE-COST-PRECALCULATION2::find-satellite-max-size-ratio
+
+(defrule CRITIQUE-COST-PRECALCULATION::find-satellite-max-size-ratio
+    (declare (salience 90))
     (MANIFEST::Mission (Name ?n1)(satellite-volume# ?v1&~nil))
     (MANIFEST::Mission (Name ?n2&~?n1) (satellite-volume# ?v2&~nil))
     ?mratio <- (CRITIQUE-COST-PARAM::satellite-max-size-ratio (value ?r) (big-name ?bn) (small-name ?sn))
@@ -19,7 +22,8 @@
     (if (> ?temp-ratio ?r)
     then(modify ?mratio (value ?temp-ratio) (big-name ?temp-big-name) (small-name ?temp-small-name))))
 
-(defrule CRITIQUE-COST-PRECALCULATION1::find-satellite-max-cost-ratio
+(defrule CRITIQUE-COST-PRECALCULATION::find-satellite-max-cost-ratio
+    (declare (salience 100))
     (MANIFEST::Mission (Name ?n1)(satellite-cost# ?c1&~nil))
     (MANIFEST::Mission (Name ?n2&~?n1) (satellite-cost# ?c2&~nil))
     ?cratio <- (CRITIQUE-COST-PARAM::satellite-max-cost-ratio (value ?r))
@@ -34,7 +38,10 @@
     (if (> ?temp-ratio ?r)
     then(modify ?cratio (value ?temp-ratio) (big-name ?temp-big-name) (small-name ?temp-small-name))))
 
-(defrule CRITIQUE-COST-PRECALCULATION1::launch-packaging-factors
+
+
+(defrule CRITIQUE-COST-PRECALCULATION::launch-packaging-factors
+    (declare (salience 100))
     (MANIFEST::Mission (id ?sat) (launch-vehicle ?lv&~nil) (Name ?n)
         (num-of-planes# ?np&~nil) (num-of-sats-per-plane# ?ns&~nil) (satellite-wet-mass ?m&~nil) (satellite-dimensions $?dim) 
         (orbit-type ?orb&~nil) (orbit-semimajor-axis ?a&~nil) (orbit-eccentricity ?e&~nil) (orbit-inclination ?i&~nil))

@@ -1,10 +1,13 @@
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION1::find-list-of-low-TRL-instruments
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::find-list-of-low-TRL-instruments
+    (declare (salience 100))
     ?ltrl <- (CRITIQUE-PERFORMANCE-PARAM::list-of-low-TRL-instruments (list $?l))
     (DATABASE::Instrument (Name ?instr&:(not-contains$ ?instr $?l)) (Technology-Readiness-Level ?trl&: (< ?trl 5)))
     =>
     (modify ?ltrl (list $?l ?instr)))
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION2::get-number-of-low-TRL-instrument
+
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::get-number-of-low-TRL-instrument
+    (declare (salience 90))
     ?miss <- (MANIFEST::Mission (Name ?n) (low-TRL-instruments# nil) (instruments $?instr-list))
     (CRITIQUE-PERFORMANCE-PARAM::list-of-low-TRL-instruments (list $?l))
     =>
@@ -17,7 +20,9 @@
     )
     (modify ?miss (low-TRL-instruments# ?c)))
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION1::find-lowest-TRL-instrument-for-each-satellite
+
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::find-lowest-TRL-instrument-for-each-satellite
+    (declare (salience 100))
     ?miss <- (MANIFEST::Mission (Name ?n) (instruments $?instr-list) (lowest-TRL-instrument-value# ?lowest-trl))
     (DATABASE::Instrument (Name ?instr&:(numberp (member$ ?instr $?instr-list))) (Technology-Readiness-Level ?trl))
     =>
@@ -27,7 +32,9 @@
         then (modify ?miss (lowest-TRL-instrument-value# ?trl))))
 )
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION2::predict-launch-date-based-on-lowest-TRL-instrument
+
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::predict-launch-date-based-on-lowest-TRL-instrument
+    (declare (salience 90))
     ?miss <- (MANIFEST::Mission (Name ?n) (lowest-TRL-instrument-value# ?lowest-trl) (instruments $?instr-list))
     =>
     (bind ?instr-num (length$ $?instr-list))
@@ -41,7 +48,9 @@
     (assert (CRITIQUE-PERFORMANCE-PARAM::launch-delay-metric (name ?n) (weight ?instr-num) (launch-date ?ld)))
 )
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION3::launch-delay-metric-calculation
+
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::launch-delay-metric-calculation
+    (declare (salience 80))
     ?c <- (CRITIQUE-PERFORMANCE-PARAM::launch-delay-metric-cumulative (orbits-considered $?o)(value ?v))
     (CRITIQUE-PERFORMANCE-PARAM::launch-delay-metric (name ?n&:(not (numberp (member$ ?n $?o))))(weight ?w) (launch-date ?ld))
     =>
@@ -50,7 +59,8 @@
 )
 
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION1::number-of-instruments
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::number-of-instruments
+    (declare (salience 100))
     ?miss <- (MANIFEST::Mission (num-of-instruments# nil)(instruments $?instr))
     ?ninstr <- (CRITIQUE-PERFORMANCE-PARAM::total-num-of-instruments (value ?v))
     =>
@@ -58,22 +68,28 @@
     (modify ?miss (num-of-instruments# ?c))
     (modify ?ninstr (value (+ ?v ?c))))
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION1::copy-datarate-duty-cycle
+
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::copy-datarate-duty-cycle
 "Copies datarate duty-cycle information from CAPABILITIES module to MANIFEST::Mission"
+    (declare (salience 100))
     (CAPABILITIES::can-measure (instrument ?ins) (in-orbit ?n) (can-take-measurements yes) (data-rate-duty-cycle# ?dc&~nil))
     ?miss <- (MANIFEST::Mission (Name ?n) (datarate-duty-cycle# nil))
     =>
     (modify ?miss (datarate-duty-cycle# ?dc))
 )
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION1::copy-power-duty-cycle 
+
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::copy-power-duty-cycle 
 "Copies power duty-cycle information from CAPABILITIES module to MANIFEST::Mission"
+    (declare (salience 100))
     (CAPABILITIES::can-measure (instrument ?ins) (in-orbit ?n) (can-take-measurements yes) (power-duty-cycle# ?dc&~nil))
     ?miss <- (MANIFEST::Mission (Name ?n) (power-duty-cycle# nil))
     =>
     (modify ?miss (power-duty-cycle# ?dc)))
 
-(defrule CRITIQUE-PERFORMANCE-PRECALCULATION1::fairness-check
+
+(defrule CRITIQUE-PERFORMANCE-PRECALCULATION::fairness-check
+    (declare (salience 100))
     (AGGREGATION::STAKEHOLDER (id ?id1) (satisfaction ?s1))
     (AGGREGATION::STAKEHOLDER (id ?id2&~id1) (satisfaction ?s2))
     ?f <- (CRITIQUE-PERFORMANCE-PARAM::fairness (stake-holder1 nil) (stake-holder2 nil)(value nil) (flag 0))
