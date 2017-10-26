@@ -34,8 +34,8 @@ import org.bson.Document;
 //import rbsa.eoss.Nto1pair;
 
 public class GenericTask implements Callable {
-    private Architecture arch;
-    private Resource res;
+    protected Architecture arch;
+    protected Resource res;
     private String type;
     private boolean debug;
     private boolean saveRete = false;
@@ -84,6 +84,8 @@ public class GenericTask implements Callable {
         ArchitectureEvaluator.getInstance().getResourcePool().freeResource( res );
         res = null;
     }
+    
+    
     @Override
     public Result call()
     {   //System.out.println("Evaluating Arch " + arch.toBitString() + " nsats = " + arch.getNsats() + " ... " );
@@ -353,7 +355,7 @@ public class GenericTask implements Callable {
         return theresult;
     }
     
-    private void evaluateCost(Rete r, Architecture arch, Result res, QueryBuilder qb, MatlabFunctions m) {
+    protected void evaluateCost(Rete r, Architecture arch, Result res, QueryBuilder qb, MatlabFunctions m) {
         try {
             
             
@@ -679,7 +681,7 @@ public class GenericTask implements Callable {
         return result;
     }
    
-    private Result evaluatePerformance(Rete r, Architecture arch, QueryBuilder qb, MatlabFunctions m) {
+    protected Result evaluatePerformance(Rete r, Architecture arch, QueryBuilder qb, MatlabFunctions m) {
         Result result = new Result();
         try {
 

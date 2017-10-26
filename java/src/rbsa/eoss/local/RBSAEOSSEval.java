@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import rbsa.eoss.Architecture;
 import rbsa.eoss.ArchitectureEvaluator;
 import rbsa.eoss.ArchitectureGenerator;
+import rbsa.eoss.CritiqueGenerator;
 import rbsa.eoss.Result;
 import rbsa.eoss.ResultCollection;
 import rbsa.eoss.ResultManager;
@@ -23,6 +24,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
@@ -56,35 +58,64 @@ public class RBSAEOSSEval {
 //////////////////////////////////////////////////////////////////////////////////////////////////        
         
 
-        long t0 = System.currentTimeMillis();
+//        long t0 = System.currentTimeMillis();
+//        
+//        // Input a new architecture design
+//        // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
+//        ArrayList<String> input_arch = new ArrayList<>();
+//        String orbit_1 = "ALH"; input_arch.add(orbit_1);
+//        String orbit_2 = "KG"; input_arch.add(orbit_2);
+//        String orbit_3 = ""; input_arch.add(orbit_3);
+//        String orbit_4 = ""; input_arch.add(orbit_4);
+//        String orbit_5 = "BHK"; input_arch.add(orbit_5);
+//
+//        // Generate a new architecture
+//        Architecture architecture = AG.defineNewArch(input_arch);
+//        
+//        //architecture = AG.getMaxArch();
+//        
+//        // Evaluate the architecture
+//        Result result = AE.evaluateArchitecture(architecture,"Slow");
+//        
+//        // Save the score and the cost
+//        double cost = result.getCost();
+//        double science = result.getScience();
+//        
+//        System.out.println("Performance Score: " + science + ", Cost: " + cost);
+//        
+//        
+//        long t1 = System.currentTimeMillis();
+//        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
+        
+        
+        
+        
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// Criticize single architecture ////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////        
         
         // Input a new architecture design
         // There must be 5 orbits. Instrument name is represented by a capital letter, taken from {A,B,C,D,E,F,G,H,I,J,K,L}
         ArrayList<String> input_arch = new ArrayList<>();
-        String orbit_1 = "ALH"; input_arch.add(orbit_1);
-        String orbit_2 = "KG"; input_arch.add(orbit_2);
+        String orbit_1 = "ABCDEFG"; input_arch.add(orbit_1);
+        String orbit_2 = "ABCDEFG"; input_arch.add(orbit_2);
         String orbit_3 = ""; input_arch.add(orbit_3);
         String orbit_4 = ""; input_arch.add(orbit_4);
         String orbit_5 = "BHK"; input_arch.add(orbit_5);
 
         // Generate a new architecture
         Architecture architecture = AG.defineNewArch(input_arch);
+
+        // Initialize Critique Generator
+        CritiqueGenerator critiquer = new CritiqueGenerator(architecture);
         
-        //architecture = AG.getMaxArch();
-        
-        // Evaluate the architecture
-        Result result = AE.evaluateArchitecture(architecture,"Slow");
-        
-        // Save the score and the cost
-        double cost = result.getCost();
-        double science = result.getScience();
-        
-        System.out.println("Performance Score: " + science + ", Cost: " + cost);
+        List<String> critique = critiquer.getCritique();
         
         
-        long t1 = System.currentTimeMillis();
-        System.out.println( "Evaluation done in: " + String.valueOf(t1-t0) + " msec");
-        
+        System.out.println("Critique:");
+        for(int i=0;i<critique.size();i++){
+            System.out.println(critique.get(i));
+        }
         
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
