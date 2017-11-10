@@ -431,7 +431,7 @@
 ?meas<- (REQUIREMENTS::Measurement (diurnal-cycle nil) (orbit-inclination ?inc&~nil) (orbit-RAAN ?raan&~nil) (factHistory ?fh))
 =>
 (if (eq ?inc polar) then (bind ?dc variable) else (bind ?dc (eval (str-cat ?raan "-only"))))
- (modify ?meas (diurnal-cycle ?dc)(factHistory (str-cat "{R" (?*rulesMap* get CAPABILITIES::basic-diurnal-cycle) " " ?fh "}")) ) )
+ (modify ?meas (diurnal-cycle ?dc)(factHistory (str-cat "{R" (?*rulesMap* get CAPABILITIES-UPDATE::basic-diurnal-cycle) " " ?fh "}")) ) )
  
  
  

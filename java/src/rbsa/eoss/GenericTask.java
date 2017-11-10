@@ -686,7 +686,6 @@ public class GenericTask implements Callable {
             
             long t0 = System.currentTimeMillis();
              
-            
             r.reset();
             assertMissions(r,arch,m);           
             
@@ -721,8 +720,6 @@ public class GenericTask implements Callable {
             r.run();
 
 
-            
-
             //Revisit times
             
             // Check if all of the orbits in the original formulation are used
@@ -737,7 +734,6 @@ public class GenericTask implements Callable {
                     }
                 }
             }
-            
 
             int javaAssertedFactID = 1;
             Iterator parameters = Params.measurements_to_instruments.keySet().iterator();
@@ -814,79 +810,6 @@ public class GenericTask implements Callable {
             }
             
 
-            //////////////////////////////////////////////////////////////
-/*
-            r.eval("(printout t \'begin\' crlf)");            
-            
-            designSpacecraft(r,arch,qb,m);
-            
-            long t0 = System.currentTimeMillis();
-
-            r.batch(Params.critique_performance_initialize_facts_clp);
-            r.batch(Params.critique_performance_clp);
-            r.batch(Params.critique_performance_precalculation_clp);
-
-            r.setFocus("CRITIQUE-PERFORMANCE-PRECALCULATION1");
-            r.run();
-            r.setFocus("CRITIQUE-PERFORMANCE-PRECALCULATION2");
-            r.run();
-            r.setFocus("CRITIQUE-PERFORMANCE-PRECALCULATION3"); 
-            r.run();
-            r.setFocus("CRITIQUE-PERFORMANCE");
-            r.run();
-            
-            long t1 = System.currentTimeMillis();
-            System.out.println( "Critique-Performance pattern matching done in: " + String.valueOf(t1-t0) + " msec");
-            
-            */
-            // Implementation of WHY question about scores
-           // r.eval("(facts MANIFEST)");
-          //  r.eval("(facts AGGREGATION)");
-          //  r.eval("(facts REQUIREMENTS)");
-
-//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-//            
-//            double value = qb.makeQuery("AGGREGATION::VALUE").get(0).getSlotValue("satisfaction").floatValue(r.getGlobalContext());
-//            System.out.println("Total score of the current architecture: " + value);
-//             
-//            String input;
-//            DialogueHistory dh = new DialogueHistory(r,qb);
-//            while(true){
-//                
-//                input = bufferedReader.readLine();
-//                String[] inputWords = input.split(" ");
-//                if (inputWords[0].equalsIgnoreCase("why")) {
-//                    String IDinQuestion = "";
-//                    if (inputWords.length == 2){
-//                        IDinQuestion = inputWords[1];
-//                    } 
-//                    dh.newWhyQuestion(IDinQuestion);    
-//                }
-//                else if(inputWords[0].equalsIgnoreCase("how")){
-//                    dh.newHowQuestion(inputWords[1]);
-//                }
-//                else if(input.equalsIgnoreCase("up")){
-//                    dh.getHigherLevel();
-//                }
-//                else if(input.equalsIgnoreCase("end")){
-//                    break;
-//                }
-//                else if ((input.split("::").length==2)&&(input.split(" ").length == 1)){
-//                    dh.queryFact(input);
-//                }
-//                else if ((input.startsWith("R"))&&(input.split(" ").length == 1)){
-//                    dh.queryRule(Integer.parseInt(input.substring(1)));
-//                }
-//                else if(input.equalsIgnoreCase("history")){
-//                    dh.printDialogueHistory();
-//                }
-//            }
-
-
-//            dbm.encodeData(archID,"science",r,qb);
-            
-
-            //////////////////////////////////////////////////////////////
             if (arch.getEval_mode().equalsIgnoreCase("DEBUG")) {
                 ArrayList<Fact> partials = qb.makeQuery("REASONING::partially-satisfied");
                 ArrayList<Fact> fulls = qb.makeQuery("REASONING::fully-satisfied");
